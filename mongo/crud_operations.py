@@ -118,33 +118,38 @@ def enroll_student(student_id, course_id):
     else:
         print("Progress record already exists.")
 
+def main():
+    """Run demonstration of CRUD operations."""
+    # Create
+    create_student({
+        "student_id": "S999",
+        "name": "Test Student",
+        "email": "test@example.com",
+        "enrollment_date": datetime.now(),
+        "courses_enrolled": []
+    })
+    
+    # Read
+    student = get_student("S999")
+    print(f"Found student: {student}")
+    
+    category_courses = get_courses_by_category("Data Science")
+    print(f"Found {len(category_courses)} Data Science courses.")
+    
+    # Update
+    update_student_email("S999", "test999@example.com")
+    
+    # Enroll & Progress
+    enroll_student("S999", "C001")
+    update_progress("S999", "C001", 50)
+    
+    # Delete
+    delete_student("S999")
+    print("Demo completed.")
+
+
 if __name__ == '__main__':
     try:
-        # Create
-        create_student({
-            "student_id": "S999",
-            "name": "Test Student",
-            "email": "test@example.com",
-            "enrollment_date": datetime.now(),
-            "courses_enrolled": []
-        })
-        
-        # Read
-        student = get_student("S999")
-        print(f"Found student: {student}")
-        
-        category_courses = get_courses_by_category("Data Science")
-        print(f"Found {len(category_courses)} Data Science courses.")
-        
-        # Update
-        update_student_email("S999", "test999@example.com")
-        
-        # Enroll & Progress
-        enroll_student("S999", "C001")
-        update_progress("S999", "C001", 50)
-        
-        # Delete
-        delete_student("S999")
-        print("Demo completed.")
+        main()
     finally:
         close_connections()

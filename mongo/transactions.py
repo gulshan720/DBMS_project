@@ -108,12 +108,19 @@ def transfer_student_transaction(student_id, old_course_id, new_course_id):
     except Exception as e:
         print(f"Transfer transaction aborted due to error: {e}")
 
-if __name__ == '__main__':
+
+def main():
+    """Run transaction demonstrations."""
+    # Note: These require MongoDB running as a replica set
     try:
-        # Note: These will fail if MongoDB is not running as a replica set!
         enroll_student_transaction("S001", "C005")
         transfer_student_transaction("S002", "C002", "C003")
     except Exception as e:
-         print(f"Demo failed: {e}\nDid you configure a MongoDB replica set?")
+        print(f"Transaction demo failed: {e}\nDid you configure a MongoDB replica set?")
+
+
+if __name__ == '__main__':
+    try:
+        main()
     finally:
         close_connections()

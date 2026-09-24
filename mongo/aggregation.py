@@ -139,7 +139,14 @@ def learning_materials_count_by_type():
     results = list(db.learning_materials.aggregate(pipeline))
     print(tabulate(results, headers="keys"))
 
-if __name__ == '__main__':
+# Aliases for compatibility
+avg_completion_per_course = average_completion_per_course
+top_students_by_completions = top_3_students_completed_courses
+materials_count_by_type = learning_materials_count_by_type
+
+
+def main():
+    """Run all aggregation pipelines."""
     try:
         average_completion_per_course()
         top_3_students_completed_courses()
@@ -148,5 +155,10 @@ if __name__ == '__main__':
         learning_materials_count_by_type()
     except ImportError:
         print("Please install tabulate: pip install tabulate")
+
+
+if __name__ == '__main__':
+    try:
+        main()
     finally:
         close_connections()

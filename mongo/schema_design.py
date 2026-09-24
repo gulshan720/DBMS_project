@@ -163,6 +163,10 @@ def setup_schemas():
     
     print("Schema setup completed.")
 
+# Aliases for compatibility
+setup_all_schemas = setup_schemas
+main = setup_schemas
+
 if __name__ == '__main__':
     try:
         setup_schemas()

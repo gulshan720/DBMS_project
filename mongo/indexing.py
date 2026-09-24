@@ -58,10 +58,16 @@ def explain_query_before_after():
     if 'inputStage' in winning_plan:
         print(f"Input Stage: {winning_plan['inputStage']['stage']}")
         print(f"Index Used: {winning_plan['inputStage'].get('indexName', 'N/A')}")
-        
+
+
+def main():
+    """Run index creation and explain plan demonstration."""
+    explain_query_before_after()
+    create_indexes()
+
+
 if __name__ == '__main__':
     try:
-        explain_query_before_after()
-        create_indexes()
+        main()
     finally:
         close_connections()

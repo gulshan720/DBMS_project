@@ -263,12 +263,12 @@ def _section(title):
     print(f"{'─' * 65}")
 
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Main – demonstrate all traversals
-# ──────────────────────────────────────────────────────────────────────────────
-
-if __name__ == "__main__":
-    driver = get_neo4j_driver()
+def main(driver=None):
+    """Run all Neo4j graph traversal demonstrations."""
+    should_close = False
+    if driver is None:
+        driver = get_neo4j_driver()
+        should_close = True
 
     try:
         print("\n" + "=" * 65)
@@ -338,4 +338,13 @@ if __name__ == "__main__":
         print("\n✅ Graph traversal demo complete.\n")
 
     finally:
-        close_connections()
+        if should_close:
+            close_connections()
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Main – demonstrate all traversals
+# ──────────────────────────────────────────────────────────────────────────────
+
+if __name__ == "__main__":
+    main()

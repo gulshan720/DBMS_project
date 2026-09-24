@@ -209,14 +209,16 @@ def _run(session, query, **kwargs):
 # Public API
 # ──────────────────────────────────────────────────────────────────────────────
 
-def clear_all(driver):
+def clear_all(driver=None):
     """Delete every node and relationship in the database.
 
     Parameters
     ----------
-    driver : neo4j.Driver
-        An active Neo4j driver instance.
+    driver : neo4j.Driver, optional
+        An active Neo4j driver instance. If None, one will be created.
     """
+    if driver is None:
+        driver = get_neo4j_driver()
     print("\n🗑️  Clearing all nodes and relationships …")
     with driver.session() as session:
         result = session.run("MATCH (n) DETACH DELETE n")
@@ -225,16 +227,18 @@ def clear_all(driver):
               f"{summary.counters.relationships_deleted} relationships.")
 
 
-def seed_all(driver):
+def seed_all(driver=None):
     """Populate the database with sample nodes and relationships.
 
     Uses MERGE so calling this multiple times is safe (idempotent).
 
     Parameters
     ----------
-    driver : neo4j.Driver
-        An active Neo4j driver instance.
+    driver : neo4j.Driver, optional
+        An active Neo4j driver instance. If None, one will be created.
     """
+    if driver is None:
+        driver = get_neo4j_driver()
     with driver.session() as session:
         # ── Nodes ────────────────────────────────────────────────────────
         print("\n📦 Seeding Nodes …")
@@ -396,14 +400,16 @@ def seed_all(driver):
         print(f"   ── Total relationships: {total_rels}")
 
 
-def print_counts(driver):
+def print_counts(driver=None):
     """Query and print node / relationship counts for verification.
 
     Parameters
     ----------
-    driver : neo4j.Driver
-        An active Neo4j driver instance.
+    driver : neo4j.Driver, optional
+        An active Neo4j driver instance. If None, one will be created.
     """
+    if driver is None:
+        driver = get_neo4j_driver()
     print("\n📊 Database Counts")
     print("=" * 40)
     with driver.session() as session:
@@ -431,16 +437,25 @@ def print_counts(driver):
         print(f"   {'TOTAL RELS':<20} {result.single()['cnt']}")
 
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Main entry point
-# ──────────────────────────────────────────────────────────────────────────────
-
-if __name__ == "__main__":
-    driver = get_neo4j_driver()
+def main(driver=None):
+    """Entry point for seeding database."""
+    should_close = False
+    if driver is None:
+        driver = get_neo4j_driver()
+        should_close = True
     try:
         clear_all(driver)
         seed_all(driver)
         print_counts(driver)
         print("\n✅ Seeding complete.\n")
     finally:
-        close_connections()
+        if should_close:
+            close_connections()
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Main entry point
+# ──────────────────────────────────────────────────────────────────────────────
+
+if __name__ == "__main__":
+    main()

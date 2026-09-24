@@ -342,12 +342,12 @@ def student_completion_rate(driver):
     return results
 
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Main – execute and display all advanced queries
-# ──────────────────────────────────────────────────────────────────────────────
-
-if __name__ == "__main__":
-    driver = get_neo4j_driver()
+def main(driver=None):
+    """Run all Neo4j advanced query demonstrations."""
+    should_close = False
+    if driver is None:
+        driver = get_neo4j_driver()
+        should_close = True
 
     try:
         print("\n" + "=" * 65)
@@ -423,4 +423,13 @@ if __name__ == "__main__":
         print("\n✅ Advanced queries demo complete.\n")
 
     finally:
-        close_connections()
+        if should_close:
+            close_connections()
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Main – execute and display all advanced queries
+# ──────────────────────────────────────────────────────────────────────────────
+
+if __name__ == "__main__":
+    main()

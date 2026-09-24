@@ -15,6 +15,14 @@ import os
 # Allow imports from project root
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# Ensure UTF-8 output encoding on Windows consoles
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 from config.db_config import close_connections
 
 
@@ -47,7 +55,10 @@ def print_menu(title, options):
 
 def pause():
     """Pause and wait for user to press Enter."""
-    input("\n  Press Enter to continue...")
+    try:
+        input("\n  Press Enter to continue...")
+    except (EOFError, KeyboardInterrupt):
+        pass
 
 
 # ─── MongoDB Demos ──────────────────────────────────────────────────────────
@@ -55,8 +66,8 @@ def pause():
 def mongo_schema_demo():
     """Demonstrate MongoDB schema validation setup."""
     print_header("MongoDB: Schema Design & Validation")
-    from mongo.schema_design import setup_all_schemas
-    setup_all_schemas()
+    from mongo.schema_design import setup_schemas
+    setup_schemas()
     pause()
 
 
@@ -333,13 +344,13 @@ def neo4j_menu():
 
 def main():
     """Main entry point for the demo CLI."""
-    print("\n" + "╔" + "═" * 58 + "╗")
-    print("║" + " " * 58 + "║")
-    print("║   Online Learning Portal – DBMS NoSQL Project Demo      ║")
-    print("║   MongoDB + Neo4j Hybrid Database System                 ║")
-    print("║   Review 2: Implementation & Demonstration               ║")
-    print("║" + " " * 58 + "║")
-    print("╚" + "═" * 58 + "╝")
+    print("\n+" + "=" * 58 + "+")
+    print("|" + " " * 58 + "|")
+    print("|   Online Learning Portal - DBMS NoSQL Project Demo       |")
+    print("|   MongoDB + Neo4j Hybrid Database System                 |")
+    print("|   Review 2: Implementation & Demonstration               |")
+    print("|" + " " * 58 + "|")
+    print("+" + "=" * 58 + "+")
 
     options = [
         "MongoDB Operations",

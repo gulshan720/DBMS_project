@@ -182,16 +182,25 @@ def show_schema(driver):
             print(f"    - {rec['name']}  ({rec.get('type', 'N/A')})")
 
 
-def setup_schema():
+def setup_schema(driver=None):
     """One-call convenience: create all constraints and indexes, then verify."""
-    driver = get_neo4j_driver()
+    should_close = False
+    if driver is None:
+        driver = get_neo4j_driver()
+        should_close = True
     try:
         create_constraints(driver)
         create_indexes(driver)
         show_schema(driver)
         print("\n✅ Schema setup complete.\n")
     finally:
-        close_connections()
+        if should_close:
+            close_connections()
+
+
+def main(driver=None):
+    """Entry point for demo CLI and direct execution."""
+    setup_schema(driver)
 
 
 # ---------------------------------------------------------------------------
@@ -199,4 +208,4 @@ def setup_schema():
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    setup_schema()
+    main()
