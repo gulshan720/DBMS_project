@@ -158,6 +158,14 @@ def mongo_crud_demo():
         pause()
 
 
+def mongo_crud_run_all():
+    """Run all MongoDB CRUD demonstrations."""
+    print_header("MongoDB: CRUD Operations")
+    from mongo.crud_operations import main as crud_main
+    crud_main()
+    pause()
+
+
 def mongo_aggregation_demo():
     """Demonstrate MongoDB aggregation pipelines."""
     from mongo.aggregation import (
@@ -249,6 +257,7 @@ def mongo_menu():
             print_header("FULL MongoDB DEMO")
             mongo_schema_demo()
             mongo_seed_demo()
+            mongo_crud_run_all()
             mongo_indexing_demo()
             # Run all aggregations
             from mongo.aggregation import (
@@ -263,6 +272,7 @@ def mongo_menu():
             quiz_performance_analysis()
             materials_count_by_type()
             pause()
+            mongo_transactions_demo()
 
 
 # ─── Neo4j Demos ────────────────────────────────────────────────────────────
@@ -376,6 +386,7 @@ def main():
                 print("  Running complete MongoDB demo...")
                 mongo_schema_demo()
                 mongo_seed_demo()
+                mongo_crud_run_all()
                 mongo_indexing_demo()
                 from mongo.aggregation import (
                     avg_completion_per_course, top_students_by_completions,
@@ -388,6 +399,8 @@ def main():
                 course_revenue_analysis()
                 quiz_performance_analysis()
                 materials_count_by_type()
+                pause()
+                mongo_transactions_demo()
 
                 print("\n  Running complete Neo4j demo...")
                 neo4j_schema_demo()

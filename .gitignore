@@ -1,7 +1,15 @@
 # Environment
 .env
+.env.*
+!.env.example
 venv/
 .venv/
+
+# Database & local data
+data/
+dump/
+*.log
+*.sqlite3
 
 # Python
 __pycache__/
