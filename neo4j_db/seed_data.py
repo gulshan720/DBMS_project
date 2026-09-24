@@ -46,6 +46,12 @@ STUDENTS = [
     {"student_id": "S008", "name": "Kavya Iyer",      "email": "kavya.iyer@email.com",      "enrollment_date": "2025-05-02"},
     {"student_id": "S009", "name": "Rahul Deshmukh",  "email": "rahul.deshmukh@email.com",  "enrollment_date": "2025-05-15"},
     {"student_id": "S010", "name": "Meera Joshi",     "email": "meera.joshi@email.com",     "enrollment_date": "2025-06-01"},
+    {"student_id": "S011", "name": "Aditya Verma",    "email": "aditya.verma@email.com",    "enrollment_date": "2025-06-10"},
+    {"student_id": "S012", "name": "Pooja Sharma",    "email": "pooja.sharma@email.com",    "enrollment_date": "2025-06-15"},
+    {"student_id": "S013", "name": "Karan Malhotra",  "email": "karan.malhotra@email.com",  "enrollment_date": "2025-06-20"},
+    {"student_id": "S014", "name": "Divya Nair",      "email": "divya.nair@email.com",      "enrollment_date": "2025-07-01"},
+    {"student_id": "S015", "name": "Manish Tiwari",   "email": "manish.tiwari@email.com",   "enrollment_date": "2025-07-05"},
+    {"student_id": "S016", "name": "Ritu Sen",        "email": "ritu.sen@email.com",        "enrollment_date": "2025-07-10"},
 ]
 
 COURSES = [
@@ -59,6 +65,8 @@ COURSES = [
     {"course_id": "C008", "title": "Cloud Computing with AWS",          "category": "Cloud & DevOps",   "difficulty_level": "Advanced",     "duration_hours": 70,  "price": 6999},
     {"course_id": "C009", "title": "DevOps & CI/CD Pipelines",          "category": "Cloud & DevOps",   "difficulty_level": "Advanced",     "duration_hours": 65,  "price": 5999},
     {"course_id": "C010", "title": "Cybersecurity Fundamentals",        "category": "Security",         "difficulty_level": "Beginner",     "duration_hours": 40,  "price": 3499},
+    {"course_id": "C011", "title": "Deep Learning Specialization",      "category": "Data Science",     "difficulty_level": "Advanced",     "duration_hours": 75,  "price": 6499},
+    {"course_id": "C012", "title": "Docker & Kubernetes in Practice",   "category": "Cloud & DevOps",   "difficulty_level": "Intermediate", "duration_hours": 50,  "price": 4999},
 ]
 
 INSTRUCTORS = [
@@ -80,6 +88,10 @@ SKILLS = [
     {"skill_id": "SK008", "name": "Web Development",    "description": "Building and maintaining websites"},
     {"skill_id": "SK009", "name": "DevOps",             "description": "Practices combining development and operations"},
     {"skill_id": "SK010", "name": "Mobile Development", "description": "Creating applications for mobile devices"},
+    {"skill_id": "SK011", "name": "Docker & Containers", "description": "Container virtualization for application deployment"},
+    {"skill_id": "SK012", "name": "Deep Learning",       "description": "Neural networks and deep learning models"},
+    {"skill_id": "SK013", "name": "Kubernetes",          "description": "Automating container deployment and scaling"},
+    {"skill_id": "SK014", "name": "GraphQL",             "description": "Data query and manipulation language for APIs"},
 ]
 
 CATEGORIES = [
@@ -149,6 +161,8 @@ TEACHES = [
     {"instructor_id": "I005", "course_id": "C010", "since": "2024-05-01"},
     {"instructor_id": "I002", "course_id": "C006", "since": "2024-09-01"},
     {"instructor_id": "I002", "course_id": "C007", "since": "2024-10-01"},
+    {"instructor_id": "I003", "course_id": "C011", "since": "2024-11-01"},
+    {"instructor_id": "I004", "course_id": "C012", "since": "2024-12-01"},
 ]
 
 # 5 PREREQUISITE_OF (prerequisite chains)
@@ -172,6 +186,8 @@ BELONGS_TO = [
     {"course_id": "C008", "category_name": "Cloud & DevOps"},
     {"course_id": "C009", "category_name": "Cloud & DevOps"},
     {"course_id": "C010", "category_name": "Security"},
+    {"course_id": "C011", "category_name": "Data Science"},
+    {"course_id": "C012", "category_name": "Cloud & DevOps"},
 ]
 
 # 8 REQUIRES_SKILL

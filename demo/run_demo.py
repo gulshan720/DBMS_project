@@ -48,7 +48,9 @@ def print_menu(title, options):
             choice = int(input("  Enter your choice: "))
             if 0 <= choice <= len(options):
                 return choice
-        except (ValueError, EOFError):
+        except EOFError:
+            return 0
+        except ValueError:
             pass
         print("  Invalid choice. Try again.")
 

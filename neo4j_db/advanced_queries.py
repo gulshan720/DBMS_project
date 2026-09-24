@@ -268,9 +268,7 @@ def prerequisite_chain_depth(driver):
         MATCH (c:Course)
         OPTIONAL MATCH path = (prereq:Course)-[:PREREQUISITE_OF*1..]->(c)
         WITH c,
-             CASE WHEN path IS NULL THEN 0
-                  ELSE MAX(length(path))
-             END AS chain_depth,
+             coalesce(max(length(path)), 0) AS chain_depth,
              COLLECT(DISTINCT prereq.title) AS prerequisites
         RETURN c.course_id  AS course_id,
                c.title      AS title,
