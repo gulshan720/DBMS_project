@@ -23,7 +23,7 @@ DBMS_project_2026/
 │
 ├── mongo/
 │   ├── schema_design.py               # Collection validators (JSON Schema)
-│   ├── seed_data.py                   # 55+ sample documents
+│   ├── seed_data.py                   # 57 sample documents
 │   ├── crud_operations.py             # Create, Read, Update, Delete
 │   ├── aggregation.py                 # 5 aggregation pipelines
 │   ├── indexing.py                    # Index creation & explain plans
@@ -31,7 +31,7 @@ DBMS_project_2026/
 │
 ├── neo4j_db/
 │   ├── schema_setup.py                # Constraints & indexes
-│   ├── seed_data.py                   # 50+ nodes, 60+ relationships
+│   ├── seed_data.py                   # 52 nodes, 72 relationships
 │   ├── crud_operations.py             # CRUD via Cypher
 │   ├── graph_traversal.py             # Path finding & recommendations
 │   └── advanced_queries.py            # Pattern matching & analytics
@@ -146,8 +146,8 @@ python neo4j_db/advanced_queries.py # Advanced queries demo
 
 ## 📝 Sample Data
 
-- **MongoDB**: 55+ documents across 6 collections
-- **Neo4j**: 40+ nodes and 60+ relationships
+- **MongoDB**: 57 documents across 6 collections
+- **Neo4j**: 52 nodes and 72 relationships
 - **Theme**: Indian tech education (realistic names, tech courses)
 
 ## 👥 Team
