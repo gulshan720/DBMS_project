@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
@@ -79,6 +79,11 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 TEMPLATES_DIR.mkdir(parents=True, exist_ok=True)
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    """Return 204 No Content for favicon requests."""
+    return Response(status_code=204)
 
 @app.get("/", include_in_schema=False)
 async def serve_index():
