@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Learning Portal – Hybrid MongoDB & Neo4j System</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Font Awesome / Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                <div class="brand-text">
+                    <h2>LearnPortal</h2>
+                    <span class="badge-hybrid">MongoDB + Neo4j</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+                <a href="#dashboard" class="nav-item active" data-view="dashboard">
+                    <i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span>
+                </a>
+                <a href="#students" class="nav-item" data-view="students">
+                    <i class="fa-solid fa-user-graduate"></i> <span>Students</span>
+                </a>
+                <a href="#courses" class="nav-item" data-view="courses">
+                    <i class="fa-solid fa-book-open"></i> <span>Courses</span>
+                </a>
+                <a href="#materials" class="nav-item" data-view="materials">
+                    <i class="fa-solid fa-photo-film"></i> <span>Learning Materials</span>
+                </a>
+                <a href="#quizzes" class="nav-item" data-view="quizzes">
+                    <i class="fa-solid fa-list-check"></i> <span>Quizzes & Progress</span>
+                </a>
+                <a href="#analytics" class="nav-item" data-view="analytics">
+                    <i class="fa-solid fa-chart-line"></i> <span>Analytics</span>
+                </a>
+                <a href="#graph" class="nav-item" data-view="graph">
+                    <i class="fa-solid fa-diagram-project"></i> <span>Graph Insights</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="db-indicator">
+                    <div class="indicator-row">
+                        <span class="dot" id="mongo-dot"></span>
+                        <span class="db-name">MongoDB 7.0 (rs0)</span>
+                    </div>
+                    <div class="indicator-row">
+                        <span class="dot" id="neo-dot"></span>
+                        <span class="db-name">Neo4j 5.26 (Bolt)</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="header-title">
+                    <h1 id="page-heading">Dashboard Overview</h1>
+                    <p id="page-subheading">Live system telemetry from MongoDB Document Store & Neo4j Graph Database</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary btn-sm" id="btn-refresh">
+                        <i class="fa-solid fa-arrows-rotate"></i> Refresh Data
+                    </button>
+                    <a href="/docs" target="_blank" class="btn btn-outline btn-sm">
+                        <i class="fa-solid fa-code"></i> API Docs
+                    </a>
+                </div>
+            </header>
+
+            <!-- Views Container -->
+            <div class="content-body">
+                <!-- VIEW 1: DASHBOARD -->
+                <section id="view-dashboard" class="view-panel active">
+                    <!-- Metrics Cards Grid -->
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon bg-indigo"><i class="fa-solid fa-user-graduate"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Total Students</span>
+                                <h3 class="metric-value" id="kpi-students">—</h3>
+                                <span class="metric-sub">MongoDB <code>students</code></span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-emerald"><i class="fa-solid fa-book"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Course Catalog</span>
+                                <h3 class="metric-value" id="kpi-courses">—</h3>
+                                <span class="metric-sub">MongoDB <code>courses</code></span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-amber"><i class="fa-solid fa-chalkboard-user"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Instructors</span>
+                                <h3 class="metric-value" id="kpi-instructors">—</h3>
+                                <span class="metric-sub">MongoDB <code>instructors</code></span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-purple"><i class="fa-solid fa-file-video"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Learning Content</span>
+                                <h3 class="metric-value" id="kpi-materials">—</h3>
+                                <span class="metric-sub">Videos, PDFs, Articles</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-rose"><i class="fa-solid fa-diagram-project"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Graph Nodes</span>
+                                <h3 class="metric-value" id="kpi-nodes">—</h3>
+                                <span class="metric-sub">Neo4j Entities</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-cyan"><i class="fa-solid fa-circle-nodes"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Relationships</span>
+                                <h3 class="metric-value" id="kpi-rels">—</h3>
+                                <span class="metric-sub">Neo4j Edges</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Sections Grid -->
+                    <div class="dashboard-row">
+                        <div class="panel-card flex-2">
+                            <div class="panel-header">
+                                <h3><i class="fa-solid fa-chart-simple"></i> Learning Progress Overview</h3>
+                                <span class="badge badge-info">Real-time DB Data</span>
+                            </div>
+                            <div class="panel-body">
+                                <div class="progress-stats-summary">
+                                    <div class="stat-pill">
+                                        <span class="label">Completed Courses</span>
+                                        <strong id="stat-completed">—</strong>
+                                    </div>
+                                    <div class="stat-pill">
+                                        <span class="label">In Progress</span>
+                                        <strong id="stat-in-progress">—</strong>
+                                    </div>
+                                    <div class="stat-pill">
+                                        <span class="label">Overall Avg Completion</span>
+                                        <strong id="stat-avg-completion">—%</strong>
+                                    </div>
+                                </div>
+                                <h4 class="mt-4 mb-2">Recent Learning Progress Records</h4>
+                                <div class="table-responsive">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Student</th>
+                                                <th>Course</th>
+                                                <th>Progress</th>
+                                                <th>Status</th>
+                                                <th>Last Accessed</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="dashboard-recent-table">
+                                            <tr><td colspan="5" class="text-center">Loading progress data...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel-card flex-1">
+                            <div class="panel-header">
+                                <h3><i class="fa-solid fa-server"></i> System Architecture</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="tech-stack-list">
+                                    <div class="tech-item">
+                                        <div class="tech-badge bg-emerald">MongoDB</div>
+                                        <div class="tech-desc">
+                                            <strong>Document Storage</strong>
+                                            <p>JSON Schema Validation, 57 baseline docs, 5 Aggregations, Indexing, ACID Transactions (rs0).</p>
+                                        </div>
+                                    </div>
+                                    <div class="tech-item">
+                                        <div class="tech-badge bg-rose">Neo4j</div>
+                                        <div class="tech-desc">
+                                            <strong>Graph Knowledge Layer</strong>
+                                            <p>52 Nodes, 72 Relationships, Uniqueness Constraints, Prerequisite Traversal, Collaborative Recommendations.</p>
+                                        </div>
+                                    </div>
+                                    <div class="tech-item">
+                                        <div class="tech-badge bg-indigo">FastAPI</div>
+                                        <div class="tech-desc">
+                                            <strong>API & Unified Backend</strong>
+                                            <p>High-performance asynchronous Python API serving endpoints and reactive UI.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 2: STUDENTS -->
+                <section id="view-students" class="view-panel">
+                    <div class="panel-card">
+                        <div class="panel-header flex-between">
+                            <div class="search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="students-search" placeholder="Search by student ID, name, email...">
+                            </div>
+                            <button class="btn btn-primary" id="btn-add-student">
+                                <i class="fa-solid fa-user-plus"></i> Register Student
+                            </button>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Enrolled Courses</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="students-table-body">
+                                        <tr><td colspan="6" class="text-center">Loading students...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 3: COURSES -->
+                <section id="view-courses" class="view-panel">
+                    <div class="panel-card">
+                        <div class="panel-header flex-between">
+                            <div class="filter-controls">
+                                <div class="search-box">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <input type="text" id="courses-search" placeholder="Search courses...">
+                                </div>
+                                <select id="course-category-filter" class="form-select">
+                                    <option value="">All Categories</option>
+                                </select>
+                                <select id="course-difficulty-filter" class="form-select">
+                                    <option value="">All Difficulties</option>
+                                    <option value="Beginner">Beginner</option>
+                                    <option value="Intermediate">Intermediate</option>
+                                    <option value="Advanced">Advanced</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" id="btn-add-course">
+                                <i class="fa-solid fa-folder-plus"></i> Add Course
+                            </button>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Title</th>
+                                            <th>Category</th>
+                                            <th>Difficulty</th>
+                                            <th>Duration</th>
+                                            <th>Price</th>
+                                            <th>Instructor</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="courses-table-body">
+                                        <tr><td colspan="8" class="text-center">Loading courses...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 4: LEARNING MATERIALS -->
+                <section id="view-materials" class="view-panel">
+                    <div class="panel-card">
+                        <div class="panel-header flex-between">
+                            <div class="filter-controls">
+                                <select id="materials-course-filter" class="form-select">
+                                    <option value="">All Courses</option>
+                                </select>
+                                <select id="materials-type-filter" class="form-select">
+                                    <option value="">All Content Types</option>
+                                    <option value="video">Video</option>
+                                    <option value="pdf">PDF Document</option>
+                                    <option value="article">Article</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" id="btn-add-material">
+                                <i class="fa-solid fa-file-circle-plus"></i> Add Learning Material
+                            </button>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Course</th>
+                                            <th>Title</th>
+                                            <th>Type</th>
+                                            <th>Duration (min)</th>
+                                            <th>Content URL</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="materials-table-body">
+                                        <tr><td colspan="7" class="text-center">Loading materials...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 5: QUIZZES AND PROGRESS -->
+                <section id="view-quizzes" class="view-panel">
+                    <div class="tabs-header">
+                        <button class="tab-btn active" data-tab="tab-quizzes"><i class="fa-solid fa-clipboard-question"></i> Course Quizzes</button>
+                        <button class="tab-btn" data-tab="tab-progress"><i class="fa-solid fa-bars-progress"></i> Student Progress Records</button>
+                    </div>
+
+                    <!-- Quizzes Sub-tab -->
+                    <div id="tab-quizzes" class="tab-content active">
+                        <div class="panel-card">
+                            <div class="panel-header flex-between">
+                                <div class="filter-controls">
+                                    <select id="quizzes-course-filter" class="form-select">
+                                        <option value="">All Courses</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary" id="btn-add-quiz">
+                                    <i class="fa-solid fa-plus"></i> Create Quiz
+                                </button>
+                            </div>
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Quiz ID</th>
+                                                <th>Course</th>
+                                                <th>Title</th>
+                                                <th>Total Points</th>
+                                                <th>Time Limit</th>
+                                                <th>Questions</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="quizzes-table-body">
+                                            <tr><td colspan="7" class="text-center">Loading quizzes...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Sub-tab -->
+                    <div id="tab-progress" class="tab-content">
+                        <div class="panel-card">
+                            <div class="panel-header flex-between">
+                                <div class="filter-controls">
+                                    <select id="progress-status-filter" class="form-select">
+                                        <option value="">All Statuses</option>
+                                        <option value="completed">Completed</option>
+                                        <option value="in_progress">In Progress</option>
+                                        <option value="enrolled">Enrolled</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Student</th>
+                                                <th>Course</th>
+                                                <th>Completion %</th>
+                                                <th>Status</th>
+                                                <th>Quiz Attempts</th>
+                                                <th>Last Accessed</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="progress-table-body">
+                                            <tr><td colspan="7" class="text-center">Loading progress records...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 6: ANALYTICS (MongoDB Aggregations & Explain Plans) -->
+                <section id="view-analytics" class="view-panel">
+                    <div class="tabs-header">
+                        <button class="tab-btn active" data-tab="tab-agg1">1. Course Completion Avg</button>
+                        <button class="tab-btn" data-tab="tab-agg2">2. Top Students</button>
+                        <button class="tab-btn" data-tab="tab-agg3">3. Course Revenue</button>
+                        <button class="tab-btn" data-tab="tab-agg4">4. Quiz Performance</button>
+                        <button class="tab-btn" data-tab="tab-agg5">5. Content Distribution</button>
+                        <button class="tab-btn" data-tab="tab-indexing">6. Indexing & Explain Plans</button>
+                    </div>
+
+                    <!-- Agg 1 -->
+                    <div id="tab-agg1" class="tab-content active">
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <h3><i class="fa-solid fa-chart-bar"></i> Average Completion Percentage Per Course</h3>
+                                <span class="badge badge-primary">Pipeline: $group + $lookup + $project + $sort</span>
+                            </div>
+                            <div class="panel-body">
+                                <table class="data-table">
+                                    <thead><tr><th>Course ID</th><th>Course Title</th><th>Category</th><th>Average Completion</th><th>Students Enrolled</th></tr></thead>
+                                    <tbody id="agg1-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Agg 2 -->
+                    <div id="tab-agg2" class="tab-content">
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <h3><i class="fa-solid fa-trophy"></i> Top Students by Completed Courses</h3>
+                                <span class="badge badge-primary">Pipeline: $match + $group + $sort + $limit + $lookup</span>
+                            </div>
+                            <div class="panel-body">
+                                <table class="data-table">
+                                    <thead><tr><th>Student ID</th><th>Name</th><th>Email</th><th>Completed Courses Count</th></tr></thead>
+                                    <tbody id="agg2-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Agg 3 -->
+                    <div id="tab-agg3" class="tab-content">
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <h3><i class="fa-solid fa-money-bill-trend-up"></i> Course Revenue Analysis</h3>
+                                <span class="badge badge-primary">Pipeline: $unwind + $group + $lookup + $multiply + $sort</span>
+                            </div>
+                            <div class="panel-body">
+                                <table class="data-table">
+                                    <thead><tr><th>Course ID</th><th>Course Title</th><th>Category</th><th>Price</th><th>Enrolled Students</th><th>Estimated Revenue</th></tr></thead>
+                                    <tbody id="agg3-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Agg 4 -->
+                    <div id="tab-agg4" class="tab-content">
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <h3><i class="fa-solid fa-square-poll-vertical"></i> Quiz Performance Analysis</h3>
+                                <span class="badge badge-primary">Pipeline: $unwind + $group + $lookup + $avg + $sort</span>
+                            </div>
+                            <div class="panel-body">
+                                <table class="data-table">
+                                    <thead><tr><th>Quiz ID</th><th>Quiz Title</th><th>Course ID</th><th>Total Points</th><th>Average Score</th><th>Attempt Count</th></tr></thead>
+                                    <tbody id="agg4-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Agg 5 -->
+                    <div id="tab-agg5" class="tab-content">
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <h3><i class="fa-solid fa-folder-tree"></i> Learning Materials Distribution by Type</h3>
+                                <span class="badge badge-primary">Pipeline: $group + $count + $sort</span>
+                            </div>
+                            <div class="panel-body">
+                                <table class="data-table">
+                                    <thead><tr><th>Material Type</th><th>Count</th></tr></thead>
+                                    <tbody id="agg5-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Indexing & Explain Plans -->
+                    <div id="tab-indexing" class="tab-content">
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <h3><i class="fa-solid fa-bolt"></i> Indexing & Query Execution Plans</h3>
+                                <span class="badge badge-success">Live explain() Stage Comparison</span>
+                            </div>
+                            <div class="panel-body">
+                                <div class="explain-comparison-box" id="explain-box">
+                                    <p>Loading real-time explain plan...</p>
+                                </div>
+                                <h4 class="mt-4 mb-2">Active Indexes across Collections</h4>
+                                <div id="active-indexes-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 7: GRAPH INSIGHTS (Neo4j) -->
+                <section id="view-graph" class="view-panel">
+                    <div class="tabs-header">
+                        <button class="tab-btn active" data-tab="tab-traversal"><i class="fa-solid fa-route"></i> Graph Traversals</button>
+                        <button class="tab-btn" data-tab="tab-recs"><i class="fa-solid fa-wand-magic-sparkles"></i> Recommendations</button>
+                        <button class="tab-btn" data-tab="tab-graph-analytics"><i class="fa-solid fa-network-wired"></i> Cypher Analytics</button>
+                    </div>
+
+                    <!-- Tab 1: Traversals -->
+                    <div id="tab-traversal" class="tab-content active">
+                        <div class="grid-2-col">
+                            <!-- Prerequisite Explorer -->
+                            <div class="panel-card">
+                                <div class="panel-header">
+                                    <h3><i class="fa-solid fa-diagram-successor"></i> Course Prerequisite Chains</h3>
+                                    <span class="badge badge-rose">[:PREREQUISITE_OF*1..]</span>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="input-inline mb-3">
+                                        <select id="prereq-course-select" class="form-select">
+                                            <option value="C004">C004 – Machine Learning A-Z</option>
+                                            <option value="C003">C003 – Data Science with Python</option>
+                                            <option value="C002">C002 – Advanced Python & OOP</option>
+                                            <option value="C007">C007 – React & Frontend Development</option>
+                                        </select>
+                                        <button class="btn btn-secondary" id="btn-explore-prereqs">Traverse Chain</button>
+                                    </div>
+                                    <div id="prereq-results" class="results-box">
+                                        <p class="text-muted">Select a course and click Traverse Chain to evaluate dependency depth.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Learning Path Shortest Path -->
+                            <div class="panel-card">
+                                <div class="panel-header">
+                                    <h3><i class="fa-solid fa-road"></i> Learning Path Finder</h3>
+                                    <span class="badge badge-rose">shortestPath()</span>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="input-inline mb-3">
+                                        <input type="text" id="path-start" class="form-input" placeholder="Start Course (e.g. C001)" value="C001">
+                                        <i class="fa-solid fa-arrow-right"></i>
+                                        <input type="text" id="path-end" class="form-input" placeholder="Target Course (e.g. C004)" value="C004">
+                                        <button class="btn btn-secondary" id="btn-find-path">Find Path</button>
+                                    </div>
+                                    <div id="path-results" class="results-box">
+                                        <p class="text-muted">Enter start and destination courses to calculate shortest prerequisite path.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Recommendations & Skill Gaps -->
+                    <div id="tab-recs" class="tab-content">
+                        <div class="grid-2-col">
+                            <!-- Collaborative Recommendations -->
+                            <div class="panel-card">
+                                <div class="panel-header">
+                                    <h3><i class="fa-solid fa-thumbs-up"></i> Collaborative Filtering Recommendations</h3>
+                                    <span class="badge badge-indigo">Peer Enrollment Overlap</span>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="input-inline mb-3">
+                                        <select id="rec-student-select" class="form-select">
+                                            <option value="S001">S001 – Aarav Sharma</option>
+                                            <option value="S002">S002 – Priya Patel</option>
+                                            <option value="S003">S003 – Rohan Mehta</option>
+                                            <option value="S004">S004 – Ananya Gupta</option>
+                                            <option value="S005">S005 – Vikram Singh</option>
+                                        </select>
+                                        <button class="btn btn-primary" id="btn-get-recs">Get Recommendations</button>
+                                    </div>
+                                    <div id="rec-results" class="results-box">
+                                        <p class="text-muted">Click to query peer graph overlap recommendations.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Skill Gap Analysis -->
+                            <div class="panel-card">
+                                <div class="panel-header">
+                                    <h3><i class="fa-solid fa-triangle-exclamation"></i> Skill Gap Analysis</h3>
+                                    <span class="badge badge-amber">Enrolled Requirements vs Possessed Skills</span>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="input-inline mb-3">
+                                        <select id="gap-student-select" class="form-select">
+                                            <option value="S001">S001 – Aarav Sharma</option>
+                                            <option value="S002">S002 – Priya Patel</option>
+                                            <option value="S003">S003 – Rohan Mehta</option>
+                                        </select>
+                                        <button class="btn btn-secondary" id="btn-check-gaps">Analyze Gaps</button>
+                                    </div>
+                                    <div id="gap-results" class="results-box">
+                                        <p class="text-muted">Analyze course prerequisites vs acquired student skills.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Graph Analytics -->
+                    <div id="tab-graph-analytics" class="tab-content">
+                        <div class="grid-2-col">
+                            <div class="panel-card">
+                                <div class="panel-header">
+                                    <h3><i class="fa-solid fa-fire"></i> Course Popularity Ranking (Neo4j)</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <table class="data-table">
+                                        <thead><tr><th>Course</th><th>Enrolled</th><th>Completed</th><th>Total Students</th></tr></thead>
+                                        <tbody id="neo-pop-table"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="panel-card">
+                                <div class="panel-header">
+                                    <h3><i class="fa-solid fa-briefcase"></i> Instructor Workload & Reach</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <table class="data-table">
+                                        <thead><tr><th>Instructor</th><th>Rating</th><th>Courses</th><th>Student Reach</th></tr></thead>
+                                        <tbody id="neo-workload-table"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODALS CONTAINER -->
+    <!-- Modal: Register / Edit Student -->
+    <div class="modal" id="modal-student">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-student-title">Register Student</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <form id="form-student">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Student ID (e.g. S017)</label>
+                            <input type="text" id="std-id" class="form-input" required placeholder="S017">
+                        </div>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="std-name" class="form-input" required placeholder="Full Name">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="std-email" class="form-input" required placeholder="student@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="text" id="std-phone" class="form-input" required placeholder="9876543210">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Student</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Student Details & Enrollment -->
+    <div class="modal" id="modal-student-details">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Student Profile & Curriculum Details</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body" id="student-details-body">
+                    Loading details...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary modal-close-btn">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Add / Edit Course -->
+    <div class="modal" id="modal-course">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-course-title">Add Course</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <form id="form-course">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Course ID (e.g. C013)</label>
+                            <input type="text" id="crs-id" class="form-input" required placeholder="C013">
+                        </div>
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" id="crs-title" class="form-input" required placeholder="Course Title">
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <input type="text" id="crs-category" class="form-input" required placeholder="Programming, Data Science, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label>Difficulty Level</label>
+                            <select id="crs-difficulty" class="form-select" required>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Instructor ID</label>
+                            <input type="text" id="crs-instructor" class="form-input" required placeholder="I001">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label>Duration (Hours)</label>
+                                <input type="number" id="crs-duration" class="form-input" required min="1" value="40">
+                            </div>
+                            <div class="form-group flex-1">
+                                <label>Price (₹ / $)</label>
+                                <input type="number" step="0.01" id="crs-price" class="form-input" required min="0" value="2999">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Course</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Add Learning Material -->
+    <div class="modal" id="modal-material">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-material-title">Add Learning Material</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <form id="form-material">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Material ID (e.g. M018)</label>
+                            <input type="text" id="mat-id" class="form-input" required placeholder="M018">
+                        </div>
+                        <div class="form-group">
+                            <label>Course ID</label>
+                            <input type="text" id="mat-course-id" class="form-input" required placeholder="C001">
+                        </div>
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" id="mat-title" class="form-input" required placeholder="Material Title">
+                        </div>
+                        <div class="form-group">
+                            <label>Content Type</label>
+                            <select id="mat-type" class="form-select" required>
+                                <option value="video">Video</option>
+                                <option value="pdf">PDF Document</option>
+                                <option value="article">Article</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Content URL</label>
+                            <input type="url" id="mat-url" class="form-input" required placeholder="https://example.com/material">
+                        </div>
+                        <div class="form-group">
+                            <label>Duration (Minutes)</label>
+                            <input type="number" id="mat-duration" class="form-input" min="1" value="20">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Material</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Update Progress -->
+    <div class="modal" id="modal-progress">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Update Course Progress</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <form id="form-progress">
+                    <div class="modal-body">
+                        <input type="hidden" id="prog-student-id">
+                        <input type="hidden" id="prog-course-id">
+                        <div class="form-group">
+                            <label>Student & Course</label>
+                            <p id="prog-target-label" class="fw-bold"></p>
+                        </div>
+                        <div class="form-group">
+                            <label>Completion Percentage: <span id="prog-pct-label">50%</span></label>
+                            <input type="range" id="prog-pct" class="form-range" min="0" max="100" value="50">
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="prog-status" class="form-select">
+                                <option value="in_progress">In Progress</option>
+                                <option value="completed">Completed (100%)</option>
+                                <option value="enrolled">Enrolled</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Progress</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Frontend Scripts -->
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/students.js"></script>
+    <script src="/static/js/courses.js"></script>
+    <script src="/static/js/materials.js"></script>
+    <script src="/static/js/quizzes.js"></script>
+    <script src="/static/js/analytics.js"></script>
+    <script src="/static/js/graph.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

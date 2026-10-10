@@ -14,9 +14,28 @@ This project builds a complete backend data layer for an online learning portal,
 ```
 DBMS_project_2026/
 ├── README.md                          # This file
-├── requirements.txt                   # Python dependencies
+├── requirements.txt                   # Python dependencies (FastAPI, PyMongo, Neo4j)
+├── run_app.py                         # Single command web application runner
 ├── .env.example                       # Environment variable template
 ├── .gitignore                         # Git ignore rules
+│
+├── app/                               # Full-stack Web Portal & REST API
+│   ├── main.py                        # FastAPI entry point & route registration
+│   ├── routers/                       # Modular REST API endpoints
+│   │   ├── health.py                  # Database health checks (/api/health)
+│   │   ├── dashboard.py               # Aggregated portal statistics (/api/dashboard)
+│   │   ├── students.py                # Student CRUD & enrollment (/api/students)
+│   │   ├── courses.py                 # Course catalog & filters (/api/courses)
+│   │   ├── materials.py               # Learning materials manager (/api/materials)
+│   │   ├── quizzes.py                 # Assessment quizzes & progress (/api/quizzes)
+│   │   ├── analytics.py               # 5 MongoDB aggregations & indexing explain
+│   │   └── graph.py                   # Neo4j traversals, recs & Cypher analytics
+│   ├── services/                      # MongoDB & Neo4j query serialization helpers
+│   ├── static/                        # CSS styles, vanilla JS views, SVG icons
+│   │   ├── css/style.css              # Modern UI design system
+│   │   └── js/                        # View controllers & interactive network graph
+│   └── templates/
+│       └── index.html                 # Single-page application UI shell
 │
 ├── config/
 │   └── db_config.py                   # Database connection helpers
@@ -40,7 +59,7 @@ DBMS_project_2026/
 │   └── run_demo.py                    # Interactive CLI demo
 │
 └── docs/
-    └── review2_report.md              # Review 2 report
+    └── review2_report.md              # Review 2 submission report
 ```
 
 ## 🚀 Setup Instructions
@@ -79,7 +98,22 @@ mongod --dbpath /path/to/data
 
 **Neo4j**: Start via Neo4j Desktop or connect to your Aura instance.
 
-### 4. Run the Interactive Demo
+### 4. Run the Full-Stack Web Application
+
+Launch the portal with a single command:
+
+```bash
+python run_app.py
+```
+
+Then open your browser at:
+- **Web Portal:** [http://127.0.0.1:8000](http://127.0.0.1:8000)
+- **Interactive REST API Docs (Swagger UI):** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+- **Alternative API Docs (ReDoc):** [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+
+### 5. Run the Interactive CLI Demo
+
+Alternatively, you can run the terminal-based interactive demo:
 
 ```bash
 python demo/run_demo.py
