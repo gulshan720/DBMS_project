@@ -28,6 +28,12 @@ class QuizCreate(BaseModel):
     time_limit_minutes: Optional[int] = 15
     questions: List[QuestionItem]
 
+class QuizUpdate(BaseModel):
+    title: Optional[str] = None
+    total_points: Optional[int] = Field(None, ge=1)
+    time_limit_minutes: Optional[int] = Field(None, ge=1)
+    questions: Optional[List[QuestionItem]] = None
+
 class ProgressUpdate(BaseModel):
     completion_percentage: float = Field(..., ge=0, le=100)
     status: Optional[str] = None
@@ -79,6 +85,21 @@ def create_quiz(payload: QuizCreate):
     doc = payload.model_dump()
     quizzes_col.insert_one(doc)
     return {"message": "Quiz created successfully", "quiz_id": payload.quiz_id}
+
+@router.put("/{quiz_id}")
+def update_quiz(quiz_id: str, payload: QuizUpdate):
+    """Update quiz attributes."""
+    quizzes_col = get_collection("quizzes")
+    existing = quizzes_col.find_one({"quiz_id": quiz_id})
+    if not existing:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Quiz {quiz_id} not found")
+
+    update_fields = {k: v for k, v in payload.model_dump().items() if v is not None}
+    if not update_fields:
+        return {"message": "No changes specified"}
+
+    quizzes_col.update_one({"quiz_id": quiz_id}, {"$set": update_fields})
+    return {"message": f"Quiz {quiz_id} updated successfully", "updated_fields": list(update_fields.keys())}
 
 @router.delete("/{quiz_id}")
 def delete_quiz(quiz_id: str):
@@ -195,3 +216,12 @@ def record_quiz_score(student_id: str, course_id: str, payload: QuizScoreSubmit)
     )
 
     return {"message": "Quiz score recorded successfully", "attempt": serialize_doc(score_item)}
+
+@router.delete("/progress/{student_id}/{course_id}")
+def delete_progress(student_id: str, course_id: str):
+    """Delete a student progress record."""
+    progress_col = get_collection("progress")
+    res = progress_col.delete_one({"student_id": student_id, "course_id": course_id})
+    if res.deleted_count == 0:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Progress record not found")
+    return {"message": f"Progress record for {student_id} in {course_id} deleted successfully"}

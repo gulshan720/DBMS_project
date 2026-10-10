@@ -76,27 +76,83 @@ async function loadCourses() {
 }
 
 async function viewCourseDetails(courseId) {
+    const modalBody = document.getElementById("course-details-body");
+    const modalTitle = document.getElementById("modal-course-details-title");
+    if (modalBody) modalBody.innerHTML = `<p class="text-center">Loading course curriculum and graph details...</p>`;
+    openModal("modal-course-details");
+
     try {
         const data = await fetchApi(`/api/courses/${encodeURIComponent(courseId)}`);
         const c = data.course;
+        const inst = data.instructor || {};
         const prereqs = data.prerequisites || [];
         const materials = data.materials || [];
         const quizzes = data.quizzes || [];
 
-        const prereqText = prereqs.length > 0
-            ? prereqs.map(p => `Depth ${p.depth}: [${escapeHtml(p.prerequisite_id)}] ${escapeHtml(p.prerequisite_title)}`).join("<br>")
-            : "No prerequisites required (Foundational Course)";
+        if (modalTitle) modalTitle.textContent = `[${c.course_id}] ${c.title}`;
 
-        const materialsText = materials.length > 0
-            ? materials.map(m => `• [${escapeHtml(m.type.toUpperCase())}] ${escapeHtml(m.title)} (${m.duration_minutes || 15}m)`).join("<br>")
-            : "No materials uploaded.";
+        let prereqsHtml = `<p class="text-success"><i class="fa-solid fa-circle-check"></i> Foundational Course (No prerequisites required)</p>`;
+        if (prereqs.length > 0) {
+            prereqsHtml = prereqs.map(p => `
+                <div class="stat-pill mb-2" style="text-align: left; border-left: 3px solid var(--rose);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>[${escapeHtml(p.prerequisite_id)}] ${escapeHtml(p.prerequisite_title)}</strong>
+                        <span class="badge badge-rose">Depth ${p.depth}</span>
+                    </div>
+                </div>
+            `).join("");
+        }
 
-        const quizzesText = quizzes.length > 0
-            ? quizzes.map(q => `• ${escapeHtml(q.title)} (${q.total_points} points, ${(q.questions || []).length} questions)`).join("<br>")
-            : "No quizzes configured.";
+        let materialsHtml = `<p class="text-muted">No learning materials configured.</p>`;
+        if (materials.length > 0) {
+            materialsHtml = materials.map(m => `
+                <div class="d-flex justify-content-between align-items-center mb-1 p-2" style="background: white; border-radius: 6px; border: 1px solid var(--border-color);">
+                    <span><i class="fa-solid ${m.type === 'video' ? 'fa-video text-rose' : (m.type === 'pdf' ? 'fa-file-pdf text-warning' : 'fa-newspaper text-info')}"></i> ${escapeHtml(m.title)}</span>
+                    <span class="badge badge-primary">${m.duration_minutes || 15}m</span>
+                </div>
+            `).join("");
+        }
 
-        alert(`Course Details: [${c.course_id}] ${c.title}\n\nCategory: ${c.category}\nDifficulty: ${c.difficulty_level}\nDuration: ${c.duration_hours}h | Price: ₹${c.price}\n\nPrerequisites (Neo4j Graph):\n${prereqs.map(p => `• [${p.prerequisite_id}] ${p.prerequisite_title}`).join("\n") || "None"}\n\nCurriculum (MongoDB):\nMaterials: ${materials.length} item(s)\nQuizzes: ${quizzes.length} quiz(zes)`);
+        let quizzesHtml = `<p class="text-muted">No assessment quizzes configured.</p>`;
+        if (quizzes.length > 0) {
+            quizzesHtml = quizzes.map(q => `
+                <div class="d-flex justify-content-between align-items-center mb-1 p-2" style="background: white; border-radius: 6px; border: 1px solid var(--border-color);">
+                    <strong>${escapeHtml(q.title)}</strong>
+                    <span class="badge badge-info">${q.total_points || 10} pts (${(q.questions || []).length} questions)</span>
+                </div>
+            `).join("");
+        }
+
+        modalBody.innerHTML = `
+            <div class="student-profile-card mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4>${escapeHtml(c.title)}</h4>
+                    <span class="badge badge-primary">${escapeHtml(c.category)}</span>
+                </div>
+                <p class="text-muted mb-2">${escapeHtml(c.description || 'Comprehensive curriculum')}</p>
+                <div class="d-flex gap-3 text-muted" style="font-size: 13px;">
+                    <span><i class="fa-solid fa-signal"></i> ${escapeHtml(c.difficulty_level)}</span>
+                    <span><i class="fa-solid fa-clock"></i> ${c.duration_hours} Hours</span>
+                    <span><i class="fa-solid fa-tag"></i> ₹${(c.price || 0).toLocaleString()}</span>
+                    <span><i class="fa-solid fa-user-tie"></i> ${escapeHtml(inst.name || c.instructor_id || 'N/A')}</span>
+                </div>
+            </div>
+
+            <div class="row" style="display: flex; gap: 20px;">
+                <div style="flex: 1;">
+                    <h5 class="mb-2"><i class="fa-solid fa-diagram-successor text-rose"></i> Prerequisites (Neo4j Graph)</h5>
+                    ${prereqsHtml}
+                    <h5 class="mt-3 mb-2"><i class="fa-solid fa-list-check text-info"></i> Quizzes (MongoDB)</h5>
+                    ${quizzesHtml}
+                </div>
+                <div style="flex: 1;">
+                    <h5 class="mb-2"><i class="fa-solid fa-photo-film text-purple"></i> Learning Materials (${materials.length})</h5>
+                    ${materialsHtml}
+                </div>
+            </div>
+        `;
     } catch (err) {
+        if (modalBody) modalBody.innerHTML = `<p class="text-danger">Failed to load details: ${escapeHtml(err.message)}</p>`;
         showToast(err.message, "error");
     }
 }

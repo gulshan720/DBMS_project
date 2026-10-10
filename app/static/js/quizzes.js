@@ -166,48 +166,59 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Add quiz mock prompt
+    // Add quiz modal handling
     const addQuizBtn = document.getElementById("btn-add-quiz");
     if (addQuizBtn) {
         addQuizBtn.addEventListener("click", () => {
-            const qid = prompt("Enter new Quiz ID (e.g. Q006):", "Q006");
-            if (!qid) return;
-            const cid = prompt("Enter Course ID (e.g. C001):", "C001");
-            if (!cid) return;
-            const title = prompt("Enter Quiz Title:", "Module 1 Mastery Quiz");
-            if (!title) return;
+            document.getElementById("qz-id").value = "";
+            document.getElementById("qz-course-id").value = "C001";
+            document.getElementById("qz-title").value = "";
+            document.getElementById("qz-points").value = "20";
+            document.getElementById("qz-time").value = "20";
+            document.getElementById("qz-q1-text").value = "";
+            document.getElementById("qz-q1-answer").value = "";
+            openModal("modal-quiz");
+        });
+    }
 
-            fetchApi("/api/quizzes", {
-                method: "POST",
-                body: JSON.stringify({
-                    quiz_id: qid,
-                    course_id: cid,
-                    title: title,
-                    total_points: 20,
-                    time_limit_minutes: 20,
-                    questions: [
-                        {
-                            question_id: `${qid}_1`,
-                            question_text: "Core conceptual question 1?",
-                            options: ["Option A", "Option B", "Option C", "Option D"],
-                            correct_answer: "Option A",
-                            points: 10
-                        },
-                        {
-                            question_id: `${qid}_2`,
-                            question_text: "Applied problem question 2?",
-                            options: ["True", "False"],
-                            correct_answer: "True",
-                            points: 10
-                        }
-                    ]
-                })
-            }).then(res => {
+    const formQuiz = document.getElementById("form-quiz");
+    if (formQuiz) {
+        formQuiz.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const qid = document.getElementById("qz-id").value.trim();
+            const cid = document.getElementById("qz-course-id").value.trim();
+            const title = document.getElementById("qz-title").value.trim();
+            const points = parseInt(document.getElementById("qz-points").value);
+            const timeLimit = parseInt(document.getElementById("qz-time").value);
+            const q1Text = document.getElementById("qz-q1-text").value.trim();
+            const q1Ans = document.getElementById("qz-q1-answer").value.trim();
+
+            try {
+                const res = await fetchApi("/api/quizzes", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        quiz_id: qid,
+                        course_id: cid,
+                        title: title,
+                        total_points: points,
+                        time_limit_minutes: timeLimit,
+                        questions: [
+                            {
+                                question_id: `${qid}_1`,
+                                question_text: q1Text,
+                                options: [q1Ans, "Alternative Option B", "Alternative Option C"],
+                                correct_answer: q1Ans,
+                                points: points
+                            }
+                        ]
+                    })
+                });
                 showToast(res.message, "success");
+                closeModal("modal-quiz");
                 loadQuizzes();
-            }).catch(err => {
+            } catch (err) {
                 showToast(err.message, "error");
-            });
+            }
         });
     }
 });

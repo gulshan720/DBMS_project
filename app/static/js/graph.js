@@ -2,7 +2,41 @@
  * Graph Insights View Logic (Neo4j Traversals & Cypher Analytics)
  */
 
+let graphSelectsInitialized = false;
+
+async function initGraphSelects() {
+    if (graphSelectsInitialized) return;
+    try {
+        const [courses, students] = await Promise.all([
+            fetchApi("/api/courses"),
+            fetchApi("/api/students")
+        ]);
+
+        const prereqSelect = document.getElementById("prereq-course-select");
+        if (prereqSelect && courses.length > 0) {
+            prereqSelect.innerHTML = courses.map(c => 
+                `<option value="${escapeHtml(c.course_id)}" ${c.course_id === 'C004' ? 'selected' : ''}>[${escapeHtml(c.course_id)}] ${escapeHtml(c.title)}</option>`
+            ).join("");
+        }
+
+        const recSelect = document.getElementById("rec-student-select");
+        const gapSelect = document.getElementById("gap-student-select");
+        if (students.length > 0) {
+            const studentOptions = students.map((s, idx) => 
+                `<option value="${escapeHtml(s.student_id)}" ${idx === 0 ? 'selected' : ''}>[${escapeHtml(s.student_id)}] ${escapeHtml(s.name)}</option>`
+            ).join("");
+            if (recSelect) recSelect.innerHTML = studentOptions;
+            if (gapSelect) gapSelect.innerHTML = studentOptions;
+        }
+
+        graphSelectsInitialized = true;
+    } catch (err) {
+        console.warn("Failed to dynamically populate graph select options:", err);
+    }
+}
+
 async function loadGraphInsights() {
+    initGraphSelects();
     loadCoursePopularity();
     loadInstructorWorkload();
 }

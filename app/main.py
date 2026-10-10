@@ -49,12 +49,16 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Enable CORS for local client flexibility
+# Enable CORS with explicit origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+        "http://localhost:3000",
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -87,9 +91,16 @@ async def serve_index():
         )
     return FileResponse(str(index_file))
 
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     """Ensure unhandled errors return clean JSON envelopes without crashing."""
+    if isinstance(exc, (HTTPException, StarletteHTTPException)):
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"detail": exc.detail}
+        )
     return JSONResponse(
         status_code=500,
         content={"detail": "An internal server error occurred.", "error": str(exc)}

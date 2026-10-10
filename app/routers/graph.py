@@ -86,8 +86,8 @@ def get_instructor_network(instructor_id: str):
     """Traverse instructor's teaching network and student connections."""
     driver = get_neo4j_driver()
     network = neo_traversal.find_instructor_network(driver, instructor_id)
-    if not network:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Instructor network not found")
+    if not network or not network.get("instructor_name"):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Instructor network for '{instructor_id}' not found")
     return network
 
 @router.get("/popularity")
