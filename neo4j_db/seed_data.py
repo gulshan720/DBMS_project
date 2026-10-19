@@ -3,20 +3,20 @@ Neo4j Seed Data for Online Learning Portal
 ============================================
 Populates the graph database with sample nodes and relationships.
 
-Nodes (40 total):
-    - 10 Students  (S001–S010, realistic Indian names)
-    - 10 Courses   (C001–C010, matching MongoDB titles)
+Nodes (52 total):
+    - 16 Students  (S001–S016, realistic Indian names)
+    - 12 Courses   (C001–C012, matching MongoDB titles)
     -  5 Instructors (I001–I005)
-    - 10 Skills
+    - 14 Skills    (SK001–SK014)
     -  5 Categories
 
-Relationships (63+ total):
+Relationships (72 total):
     - 15  ENROLLED_IN
     -  5  COMPLETED
     - 10  HAS_SKILL  (students)
-    -  5  TEACHES
+    - 12  TEACHES
     -  5  PREREQUISITE_OF
-    - 10  BELONGS_TO
+    - 12  BELONGS_TO
     -  8  REQUIRES_SKILL
     -  5  HAS_SKILL  (instructors)
 
@@ -149,7 +149,7 @@ STUDENT_SKILLS = [
     {"student_id": "S008", "skill_id": "SK008", "proficiency_level": "Intermediate"},
 ]
 
-# 5 TEACHES (each instructor teaches 1–2 courses)
+# 12 TEACHES (each instructor teaches 1–3 courses)
 TEACHES = [
     {"instructor_id": "I001", "course_id": "C001", "since": "2024-01-01"},
     {"instructor_id": "I001", "course_id": "C002", "since": "2024-06-01"},
@@ -174,7 +174,7 @@ PREREQUISITES = [
     {"prerequisite_id": "C001", "course_id": "C005"},   # Python Fundamentals -> Django
 ]
 
-# 10 BELONGS_TO (every course belongs to a category)
+# 12 BELONGS_TO (every course belongs to a category)
 BELONGS_TO = [
     {"course_id": "C001", "category_name": "Programming"},
     {"course_id": "C002", "category_name": "Programming"},

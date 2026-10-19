@@ -77,10 +77,11 @@ def update_progress(student_id, course_id, percentage):
     print(f"Modified count: {result.modified_count}")
 
 def delete_student(student_id):
-    """Deletes a student."""
+    """Deletes a student and cascaded progress records."""
     print(f"Deleting student: {student_id}")
     db = get_mongo_db()
     result = db.students.delete_one({"student_id": student_id})
+    db.progress.delete_many({"student_id": student_id})
     print(f"Deleted count: {result.deleted_count}")
 
 def delete_quiz(quiz_id):

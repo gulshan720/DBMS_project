@@ -18,34 +18,37 @@ def execute_query(query: str, parameters: dict = None):
 
 def get_graph_counts():
     """Retrieve node and relationship totals by label and type."""
-    driver = get_neo4j_driver()
     counts = {
         "nodes_by_label": {},
         "relationships_by_type": {},
         "total_nodes": 0,
         "total_relationships": 0,
     }
-    with driver.session() as session:
-        # Total nodes
-        res = session.run("MATCH (n) RETURN count(n) AS cnt").single()
-        counts["total_nodes"] = res["cnt"] if res else 0
+    try:
+        driver = get_neo4j_driver()
+        with driver.session() as session:
+            # Total nodes
+            res = session.run("MATCH (n) RETURN count(n) AS cnt").single()
+            counts["total_nodes"] = res["cnt"] if res else 0
 
-        # Total relationships
-        res = session.run("MATCH ()-[r]->() RETURN count(r) AS cnt").single()
-        counts["total_relationships"] = res["cnt"] if res else 0
+            # Total relationships
+            res = session.run("MATCH ()-[r]->() RETURN count(r) AS cnt").single()
+            counts["total_relationships"] = res["cnt"] if res else 0
 
-        # Node labels
-        label_res = session.run("CALL db.labels() YIELD label RETURN label")
-        for record in label_res:
-            lbl = record["label"]
-            cnt_res = session.run(f"MATCH (n:`{lbl}`) RETURN count(n) AS cnt").single()
-            counts["nodes_by_label"][lbl] = cnt_res["cnt"] if cnt_res else 0
+            # Node labels
+            label_res = session.run("CALL db.labels() YIELD label RETURN label")
+            for record in label_res:
+                lbl = record["label"]
+                cnt_res = session.run(f"MATCH (n:`{lbl}`) RETURN count(n) AS cnt").single()
+                counts["nodes_by_label"][lbl] = cnt_res["cnt"] if cnt_res else 0
 
-        # Relationship types
-        rel_res = session.run("CALL db.relationshipTypes() YIELD relationshipType RETURN relationshipType")
-        for record in rel_res:
-            rtype = record["relationshipType"]
-            cnt_res = session.run(f"MATCH ()-[r:`{rtype}`]->() RETURN count(r) AS cnt").single()
-            counts["relationships_by_type"][rtype] = cnt_res["cnt"] if cnt_res else 0
+            # Relationship types
+            rel_res = session.run("CALL db.relationshipTypes() YIELD relationshipType RETURN relationshipType")
+            for record in rel_res:
+                rtype = record["relationshipType"]
+                cnt_res = session.run(f"MATCH ()-[r:`{rtype}`]->() RETURN count(r) AS cnt").single()
+                counts["relationships_by_type"][rtype] = cnt_res["cnt"] if cnt_res else 0
+    except Exception:
+        pass
 
     return counts

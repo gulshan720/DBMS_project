@@ -15,23 +15,25 @@ router = APIRouter(prefix="/api/graph", tags=["Graph Insights"])
 @router.get("/summary")
 def get_graph_summary():
     """Retrieve node counts, relationship counts, and schema constraints."""
-    driver = get_neo4j_driver()
-    counts = get_graph_counts()
-
-    # Retrieve constraints and indexes
     constraints = []
     indexes = []
-    with driver.session() as session:
-        try:
-            for r in session.run("SHOW CONSTRAINTS"):
-                constraints.append({"name": r.get("name"), "type": r.get("type"), "entityType": r.get("entityType")})
-        except Exception:
-            pass
-        try:
-            for r in session.run("SHOW INDEXES"):
-                indexes.append({"name": r.get("name"), "type": r.get("type"), "state": r.get("state")})
-        except Exception:
-            pass
+    counts = get_graph_counts()
+
+    try:
+        driver = get_neo4j_driver()
+        with driver.session() as session:
+            try:
+                for r in session.run("SHOW CONSTRAINTS"):
+                    constraints.append({"name": r.get("name"), "type": r.get("type"), "entityType": r.get("entityType")})
+            except Exception:
+                pass
+            try:
+                for r in session.run("SHOW INDEXES"):
+                    indexes.append({"name": r.get("name"), "type": r.get("type"), "state": r.get("state")})
+            except Exception:
+                pass
+    except Exception:
+        pass
 
     return {
         "metrics": counts,

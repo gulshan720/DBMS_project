@@ -61,33 +61,25 @@ def seed_all():
     db.students.insert_many(students)
 
     print("Seeding learning materials...")
-    materials = []
-    mat_id = 1
-    for c in courses:
-        # Add 1-2 materials per course
-        for i in range(random.randint(1, 2)):
-            materials.append({
-                "material_id": f"M{mat_id:03d}",
-                "course_id": c["course_id"],
-                "title": f"Lecture {i+1} for {c['title']}",
-                "type": random.choice(["video", "pdf", "article"]),
-                "content_url": f"http://example.com/mat/{mat_id}",
-                "duration_minutes": random.randint(10, 60),
-                "order_index": i
-            })
-            mat_id += 1
-    # Ensure at least 15
-    while len(materials) < 15:
-        materials.append({
-            "material_id": f"M{mat_id:03d}",
-            "course_id": "C001",
-            "title": f"Extra Material {mat_id}",
-            "type": "video",
-            "content_url": f"http://example.com/mat/{mat_id}",
-            "duration_minutes": 20,
-            "order_index": 5
-        })
-        mat_id += 1
+    materials = [
+        {"material_id": "M001", "course_id": "C001", "title": "Introduction to Data Science", "type": "video", "content_url": "http://example.com/mat/1", "duration_minutes": 30, "order_index": 0},
+        {"material_id": "M002", "course_id": "C001", "title": "Python & Pandas Cheatsheet", "type": "pdf", "content_url": "http://example.com/mat/2", "duration_minutes": 20, "order_index": 1},
+        {"material_id": "M003", "course_id": "C002", "title": "Neural Network Architecture", "type": "video", "content_url": "http://example.com/mat/3", "duration_minutes": 45, "order_index": 0},
+        {"material_id": "M004", "course_id": "C002", "title": "Backpropagation Demystified", "type": "article", "content_url": "http://example.com/mat/4", "duration_minutes": 25, "order_index": 1},
+        {"material_id": "M005", "course_id": "C003", "title": "Modern JavaScript Fundamentals", "type": "video", "content_url": "http://example.com/mat/5", "duration_minutes": 35, "order_index": 0},
+        {"material_id": "M006", "course_id": "C003", "title": "DOM & Event Handling Handbook", "type": "pdf", "content_url": "http://example.com/mat/6", "duration_minutes": 20, "order_index": 1},
+        {"material_id": "M007", "course_id": "C004", "title": "React State Management & Hooks", "type": "video", "content_url": "http://example.com/mat/7", "duration_minutes": 50, "order_index": 0},
+        {"material_id": "M008", "course_id": "C004", "title": "Building Reusable Components", "type": "article", "content_url": "http://example.com/mat/8", "duration_minutes": 30, "order_index": 1},
+        {"material_id": "M009", "course_id": "C005", "title": "AWS VPC & Network Architecture", "type": "video", "content_url": "http://example.com/mat/9", "duration_minutes": 40, "order_index": 0},
+        {"material_id": "M010", "course_id": "C005", "title": "AWS Solutions Architect Study Guide", "type": "pdf", "content_url": "http://example.com/mat/10", "duration_minutes": 45, "order_index": 1},
+        {"material_id": "M011", "course_id": "C006", "title": "Azure Core Cloud Services", "type": "video", "content_url": "http://example.com/mat/11", "duration_minutes": 25, "order_index": 0},
+        {"material_id": "M012", "course_id": "C007", "title": "Ethical Hacking Fundamentals & Kali Linux", "type": "video", "content_url": "http://example.com/mat/12", "duration_minutes": 40, "order_index": 0},
+        {"material_id": "M013", "course_id": "C007", "title": "Penetration Testing Lab Manual", "type": "pdf", "content_url": "http://example.com/mat/13", "duration_minutes": 30, "order_index": 1},
+        {"material_id": "M014", "course_id": "C008", "title": "Network Security & Firewalls", "type": "video", "content_url": "http://example.com/mat/14", "duration_minutes": 35, "order_index": 0},
+        {"material_id": "M015", "course_id": "C009", "title": "Kotlin for Android Development", "type": "video", "content_url": "http://example.com/mat/15", "duration_minutes": 45, "order_index": 0},
+        {"material_id": "M016", "course_id": "C009", "title": "Android Activity Lifecycle Reference", "type": "pdf", "content_url": "http://example.com/mat/16", "duration_minutes": 20, "order_index": 1},
+        {"material_id": "M017", "course_id": "C010", "title": "SwiftUI Essentials & Navigation", "type": "video", "content_url": "http://example.com/mat/17", "duration_minutes": 40, "order_index": 0}
+    ]
     db.learning_materials.insert_many(materials)
 
     print("Seeding quizzes...")

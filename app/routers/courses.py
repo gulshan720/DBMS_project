@@ -211,10 +211,11 @@ def delete_course(course_id: str):
     if res.deleted_count == 0:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Course {course_id} not found")
 
-    # Cascade deletes to materials, quizzes, and progress
+    # Cascade deletes to materials, quizzes, progress, and student enrollments
     get_collection("learning_materials").delete_many({"course_id": course_id})
     get_collection("quizzes").delete_many({"course_id": course_id})
     get_collection("progress").delete_many({"course_id": course_id})
+    get_collection("students").update_many({}, {"$pull": {"courses_enrolled": course_id}})
 
     # Detach delete in Neo4j
     try:

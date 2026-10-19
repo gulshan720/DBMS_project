@@ -51,9 +51,11 @@ def enroll_student_transaction(student_id, course_id):
                 print(f"Progress record created: {progress_id}")
                 
                 print("Transaction committed successfully.")
+                return True
                 
     except Exception as e:
         print(f"Transaction aborted due to error: {e}")
+        raise
 
 def transfer_student_transaction(student_id, old_course_id, new_course_id):
     """
@@ -104,9 +106,11 @@ def transfer_student_transaction(student_id, old_course_id, new_course_id):
                 }, session=session)
                 
                 print("Transfer transaction committed successfully.")
+                return True
                 
     except Exception as e:
         print(f"Transfer transaction aborted due to error: {e}")
+        raise
 
 
 def main():

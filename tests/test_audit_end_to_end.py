@@ -73,10 +73,51 @@ def get_current_counts():
         rels = s.run("MATCH ()-[r]->() RETURN count(r) AS cnt").single()["cnt"]
     return mongo_counts, nodes, rels
 
+def check_databases_reachable():
+    """Verify live connectivity before running integration audit."""
+    mongo_ok = False
+    neo_ok = False
+    try:
+        from config.db_config import get_mongo_client
+        client = get_mongo_client()
+        client.admin.command("ping")
+        mongo_ok = True
+    except Exception:
+        pass
+
+    try:
+        from config.db_config import get_neo4j_driver
+        driver = get_neo4j_driver()
+        driver.verify_connectivity()
+        neo_ok = True
+    except Exception:
+        pass
+
+    return mongo_ok, neo_ok
+
 def run_tests():
     print("=" * 60)
     print("Online Learning Portal - Comprehensive Audit & Verification")
     print("=" * 60)
+
+    # Pre-flight check
+    mongo_ok, neo_ok = check_databases_reachable()
+    if not (mongo_ok and neo_ok):
+        print("\n[Pre-flight Check] Live integration tests require active databases:")
+        print(f"  - MongoDB (127.0.0.1:27017): {'CONNECTED' if mongo_ok else 'UNAVAILABLE'}")
+        print(f"  - Neo4j   (bolt://localhost:7687): {'CONNECTED' if neo_ok else 'UNAVAILABLE'}")
+        print("\nInstructions to execute live integration tests:")
+        print("  1. Start MongoDB daemon (standalone or replica set rs0)")
+        print("  2. Start Neo4j daemon (bolt://localhost:7687)")
+        print("  3. Initialize schemas and baseline seed data:")
+        print("       python mongo/schema_design.py")
+        print("       python mongo/seed_data.py")
+        print("       python neo4j_db/schema_setup.py")
+        print("       python neo4j_db/seed_data.py")
+        print("  4. Launch the application in a separate terminal:")
+        print("       uvicorn app.main:app --port 8000")
+        print("  5. Run this test suite: python tests/test_audit_end_to_end.py\n")
+        sys.exit(1)
 
     # 1. Clean and check baseline
     restore_clean_baseline()

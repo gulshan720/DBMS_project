@@ -34,13 +34,14 @@ def get_mongo_client():
     global _mongo_client
     if _mongo_client is None:
         try:
-            _mongo_client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+            client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
             # Force a connection to verify it works
-            _mongo_client.admin.command("ping")
+            client.admin.command("ping")
+            _mongo_client = client
             print("[MongoDB] Connected successfully.")
         except Exception as e:
             print(f"[MongoDB] Connection failed: {e}")
-            sys.exit(1)
+            raise ConnectionError(f"[MongoDB] Connection failed: {e}") from e
     return _mongo_client
 
 
@@ -64,14 +65,15 @@ def get_neo4j_driver():
     global _neo4j_driver
     if _neo4j_driver is None:
         try:
-            _neo4j_driver = GraphDatabase.driver(
+            driver = GraphDatabase.driver(
                 NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD)
             )
-            _neo4j_driver.verify_connectivity()
+            driver.verify_connectivity()
+            _neo4j_driver = driver
             print("[Neo4j] Connected successfully.")
         except Exception as e:
             print(f"[Neo4j] Connection failed: {e}")
-            sys.exit(1)
+            raise ConnectionError(f"[Neo4j] Connection failed: {e}") from e
     return _neo4j_driver
 
 

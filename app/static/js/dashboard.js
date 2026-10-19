@@ -7,18 +7,18 @@ async function loadDashboard() {
         const stats = await fetchApi("/api/dashboard/stats");
 
         // KPI Counts
-        const mongo = stats.mongodb.counts;
+        const mongo = stats.mongodb?.counts || {};
         document.getElementById("kpi-students").textContent = mongo.students ?? 0;
         document.getElementById("kpi-courses").textContent = mongo.courses ?? 0;
         document.getElementById("kpi-instructors").textContent = mongo.instructors ?? 0;
         document.getElementById("kpi-materials").textContent = mongo.learning_materials ?? 0;
 
-        const neo = stats.neo4j;
+        const neo = stats.neo4j || {};
         document.getElementById("kpi-nodes").textContent = neo.total_nodes ?? 0;
         document.getElementById("kpi-rels").textContent = neo.total_relationships ?? 0;
 
         // Progress Summary
-        const prog = stats.mongodb.progress_summary;
+        const prog = stats.mongodb?.progress_summary || {};
         document.getElementById("stat-completed").textContent = prog.completed ?? 0;
         document.getElementById("stat-in-progress").textContent = prog.in_progress ?? 0;
         document.getElementById("stat-avg-completion").textContent = `${prog.overall_average_completion ?? 0}%`;

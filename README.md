@@ -96,7 +96,7 @@ All tests and application features are verified against a standardized baseline:
 | **MongoDB** | `quizzes` | 5 | Assessments with questions and maximum point values |
 | **MongoDB** | `progress` | 10 | Course progress records with completion percentages |
 | **MongoDB** | **Total Documents** | **57** | **Verified 100% Intact** |
-| **Neo4j** | **Total Nodes** | **52** | `:Student` (10), `:Course` (10), `:Instructor` (5), `:Skill` (22), `:Category` (5) |
+| **Neo4j** | **Total Nodes** | **52** | `:Student` (16), `:Course` (12), `:Instructor` (5), `:Skill` (14), `:Category` (5) |
 | **Neo4j** | **Total Relationships** | **72** | `:ENROLLED_IN`, `:COMPLETED`, `:PREREQUISITE_OF`, `:TEACHES`, `:HAS_SKILL`, `:REQUIRES_SKILL`, `:BELONGS_TO` |
 
 ---

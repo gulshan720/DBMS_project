@@ -51,10 +51,45 @@ def verify_db_counts():
         rels = s.run("MATCH ()-[r]->() RETURN count(r) AS cnt").single()["cnt"]
     return sum(m_counts.values()), nodes, rels
 
+def check_databases_reachable():
+    """Verify live connectivity before running real-browser tests."""
+    mongo_ok = False
+    neo_ok = False
+    try:
+        from config.db_config import get_mongo_client
+        client = get_mongo_client()
+        client.admin.command("ping")
+        mongo_ok = True
+    except Exception:
+        pass
+
+    try:
+        from config.db_config import get_neo4j_driver
+        driver = get_neo4j_driver()
+        driver.verify_connectivity()
+        neo_ok = True
+    except Exception:
+        pass
+
+    return mongo_ok, neo_ok
+
 def run_browser_tests():
     print("=" * 65)
     print("Real-Browser Frontend Verification (Playwright Chromium)")
     print("=" * 65)
+
+    # Pre-flight check
+    mongo_ok, neo_ok = check_databases_reachable()
+    if not (mongo_ok and neo_ok):
+        print("\n[Pre-flight Check] Real browser mutation tests require active databases:")
+        print(f"  - MongoDB (127.0.0.1:27017): {'CONNECTED' if mongo_ok else 'UNAVAILABLE'}")
+        print(f"  - Neo4j   (bolt://localhost:7687): {'CONNECTED' if neo_ok else 'UNAVAILABLE'}")
+        print("\nInstructions to execute browser tests:")
+        print("  1. Start MongoDB & Neo4j daemons")
+        print("  2. Seed data: python mongo/seed_data.py && python neo4j_db/seed_data.py")
+        print("  3. Start FastAPI server: uvicorn app.main:app --port 8000")
+        print("  4. Run browser suite: python tests/test_browser_ui.py\n")
+        sys.exit(1)
 
     # 1. Verify baseline before start
     restore_clean_baseline()

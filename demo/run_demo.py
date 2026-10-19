@@ -11,6 +11,7 @@ Usage:
 
 import sys
 import os
+from datetime import datetime
 
 # Allow imports from project root
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -112,7 +113,7 @@ def mongo_crud_demo():
                 "name": "Demo Student",
                 "email": "demo@example.com",
                 "phone": "9999999999",
-                "enrollment_date": "2026-01-01",
+                "enrollment_date": datetime(2026, 1, 1),
                 "courses_enrolled": [],
             })
         elif choice == 2:
@@ -146,7 +147,7 @@ def mongo_crud_demo():
                 "name": "Demo Student",
                 "email": "demo@example.com",
                 "phone": "9999999999",
-                "enrollment_date": "2026-01-01",
+                "enrollment_date": datetime(2026, 1, 1),
                 "courses_enrolled": [],
             })
             get_student("S001")
